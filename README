@@ -1,0 +1,33 @@
+Spindown every /sys/block/sd* device after specified idle time.
+This is useful because typically hdparm doesn't spin down external
+drives.
+
+This was developed and tested in Ubuntu Jaunty, but should work in
+subsequent releases. The script needs the package sdparm and root
+privileges. The most common use is to launch it within rc.local at
+boot time.
+
+For example, in a home server that is mostly idle, internal hardrives
+can be set to spindown through hdparm, and external drives through
+this script by adding the following lines to /etc/rc.local before the
+`exit 0` statement.
+
+rc.local
+--------
+#Spindown internal HDD after 10 minutes
+hdparm -q -S 120 /dev/sda
+
+#And also every external drive after 10 minutes
+/etc/init.d/scsi-idle 600 &
+
+
+Usage
+-----
+Syntax:
+    spindown [-h] | [[-i seconds] | [-s] | [-e sda [-e sdb ...]]]
+
+Parameters:
+    -h, --help      this help screen
+    -e, --exclude   do not operate on specified drive
+    -i, --interval  idle seconds above which the drives should spin down
+    -s, --simulate  do not perform actions, just simulate what would happen
